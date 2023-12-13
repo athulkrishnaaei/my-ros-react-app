@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import ROSLIB from 'roslib';
-
+import logo from './eurotable.svg' 
+import DynamicSVGWithCircle from './components/DynamicSVGWithCircle';
+import './App.css';
 function App() {
   const [messages, setMessages] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState('Not Connected');
-
+  const [circlePosition, setCirclePosition] = useState({ x: 10, y: 10 });
+  let Logo = require('./table.jpeg')
   useEffect(() => {
     // Connecting to ROS
     const ros = new ROSLIB.Ros({
@@ -27,18 +30,25 @@ function App() {
       logToConsole('Connection to websocket server closed.');
     });
 
-    // Subscribing to a Topic
+    // Subscribing to Chatter Topic
     const listener = new ROSLIB.Topic({
       ros: ros,
       name: '/chatter',
       messageType: 'std_msgs/msg/String',
     });
+    //Subscribing to pose topic
 
     listener.subscribe((message) => {
       setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages, message.data];
+        const updatedMessages = [...prevMessages, message];
         // Keep only the last 5 messages
         return updatedMessages.slice(Math.max(0, updatedMessages.length - 5));
+      });
+
+      // Update the circle position based on the received data
+      setCirclePosition({
+        x: circlePosition.x , // Adjust the scale factor as needed
+        y: circlePosition.y , // Adjust the scale factor as needed
       });
     });
 
@@ -47,19 +57,38 @@ function App() {
       listener.unsubscribe();
       ros.close();
     };
-  }, []); // Empty dependency array ensures the effect runs once when the component mounts
+  }, [circlePosition]); // Include circlePosition in the dependency array
 
   return (
-    <div>
+    <div className="app-container">
+    <header>
       <h1>ROS React App</h1>
       <p>Connection Status: {connectionStatus}</p>
+    </header>
+
+    <section className="content-section">
       <h2>Last 5 Received Messages</h2>
       <ul>
         {messages.map((message, index) => (
-          <li key={index}>{message}</li>
+          <li key={index}>{JSON.stringify(message)}</li>
         ))}
       </ul>
-    </div>
+    </section>
+    
+    <DynamicSVGWithCircle />
+    
+   
+    {/* <section className="svg-section">
+    
+    <img src={logo} className="App-logo" alt="logo" width={800} height={500}/>
+    {/* <circle cx={circlePosition.x} cy={circlePosition.y} r="100" fill="red" /> */}
+    {/* <svg>
+      <circle cx="10" cy="0" r="10" stroke="red" stroke-width="10" fill="none" />
+    </svg>
+     
+    </section> */}
+  </div>
+
   );
 }
 
