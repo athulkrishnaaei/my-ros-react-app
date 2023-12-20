@@ -4,7 +4,33 @@ body {
   padding: 0;
   background-color: #f4f4f4;
 }
-
+.triangle-container{
+  width: 500px;
+  margin: auto;
+  text-align:center;
+  border: 1px solid white;
+  
+    &:hover, &:active{
+      .triangle{
+        transform: rotate(-180deg); 
+      }
+    }
+  
+  .triangle{
+    fill: transparent;
+    stroke: white;
+    stroke-width: 8;
+    transition: all 0.8s ease-in-out;
+  
+  @keyframes mymove {
+    0%   {opacity:0}
+    50%  {opacity:1}
+    100% {opacity:0}
+  }
+    
+    transform-origin: 250px 250px;
+  }
+}
 .app-container {
   max-width: 800px;
   margin: 0 auto;
@@ -34,4 +60,61 @@ ul {
 
 li {
   margin-bottom: 5px;
+}
+.teleop-keyboard {
+  text-align: center;
+  margin: 20px;
+}
+.fake-buttons{
+  background-color:rgb(94, 91, 91);
+  color: rgb(225, 8, 8);
+}
+.cross-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.left-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+}
+.right-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: right;
+}
+
+button {
+  font-size: 16px;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+.forward-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.backward-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.left-button {
+  background-color: #2196f3;
+  color: white;
+}
+
+.right-button {
+  background-color: #ff9800;
+  color: white;
 }
