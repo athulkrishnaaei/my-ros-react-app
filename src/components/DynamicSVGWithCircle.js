@@ -3,16 +3,57 @@
 import React, { useState, useEffect } from 'react';
 
 const DynamicSVGWithCircle = ({circlePosition}) => {
-  const [currentCirclePosition, setCurrentCirclePosition] = useState({ x: 50, y: 50 });
-  const [rotation, setRotation] = useState(0);
+  const [currentCirclePosition, setCurrentCirclePosition] = useState({ x: 50, y: 50,z: 0,z: 0 });
+  const [rotationAngles, setRotationAngles] = useState({ x: 0, y: 0, z: 0 });
+  function coordinatesToAngle(x, y) {
+    // Convert radians to degrees using (180 / Math.PI)
+    return Math.atan2(x, y) * (180 / Math.PI);
+  }
+  const quaternionToEuler = ({ x, y, z, w }) => {
+    const t0 = +2.0 * (w * x + y * z);
+    const t1 = +1.0 - 2.0 * (x * x + y * y);
+    const roll_x = Math.atan2(t0, t1);
+
+    let t2 = +2.0 * (w * y - z * x);
+    t2 > 1 && (t2 = 1);
+    t2 < -1 && (t2 = -1);
+    // if (t2 > 1) {
+    //   t2 = 1;
+    // } else if (t2 < -1) {
+    //   t2 = -1;
+    // }
+    const pitch_y = Math.asin(t2);
+
+    const t3 = +2.0 * (w * z + x * y);
+    const t4 = +1.0 - 2.0 * (y * y + z * z);
+    const yaw_z = Math.atan2(t3, t4);
+
+    return { x: roll_x, y: pitch_y, z: yaw_z };
+  };
+  const mapValueToAngle = (value) => {
+    // Ensure the value is within the valid range
+    // const clampedValue = Math.max(-1, Math.min(1, value));
+
+    // // Map the value to the range (0, 360)
+    // const mappedAngle = (clampedValue + 1) * 180;
+
+    // return mappedAngle;
+    // const angleInRadians = Math.atan2(value, 1 - Math.abs(value));
+
+    // // Convert radians to degrees
+    //     return angleInRadians * (180 / Math.PI);
+    return 2 * Math.acos(value) * (180 / Math.PI)
+ 
+  };
 
   useEffect(() => {
     // Update the local state with the received prop
     setCurrentCirclePosition(circlePosition);
-    const newRotation = Math.atan2(currentCirclePosition.y, currentCirclePosition.x) * (180 / Math.PI);
-
-    // Update the rotation state
-    setRotation(newRotation);
+    let quaternion = { x: circlePosition.x, y: circlePosition.y, z: circlePosition.z, w: circlePosition.w };
+    // Convert quaternion to Euler angles
+    const { x, y, z } = quaternionToEuler(quaternion);
+    // Set rotation angles
+    setRotationAngles({ x, y, z });
   }, [circlePosition]);
 
 
@@ -30,26 +71,71 @@ const DynamicSVGWithCircle = ({circlePosition}) => {
 
 
 
-<image
+
+
+
+// <polygon id="myTriangle" points="80,30 150,50 100,150" fill="blue" />
+
+
+  // Replace the rotation data with your provided values
+ 
+
+
+  <g transform="translate(50, 50)">
+  <image
+  href="https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Red_triangle_with_thick_white_border.svg/1200px-Red_triangle_with_thick_white_border.svg.png"
+  x=${(currentCirclePosition.x-50)}
+  y=${(currentCirclePosition.y-50)}
+  width="100" // Set the width of the image
+  height="100" // Set the height of the image
+  transform="rotate(${mapValueToAngle(currentCirclePosition.w)} ${(currentCirclePosition.x)} ${(currentCirclePosition.y)})"
+  transformOrigin= "center"
+  />
+  </g>
+</svg>
+  `;
+
+  return (
+    <div>
+     
+  <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+  <h1>{mapValueToAngle(currentCirclePosition.w)}</h1>
+  <h1>{coordinatesToAngle(currentCirclePosition.x,currentCirclePosition.y)}</h1>
+  </div>
+  );
+};
+
+export default DynamicSVGWithCircle;
+// <circle cx="${currentCirclePosition.x}" cy="${currentCirclePosition.y}" r="90" fill="red" />
+// transform={" rotate(${angle,axisX,axisY,axisZ})
+
+{/* <polygon
+points="200,10 250,90 150,90"
+fill="black"
+transform="rotate(${mapValueToAngle(currentCirclePosition.w)} ${(currentCirclePosition.x)} ${(currentCirclePosition.y)})"
+/> */}
+
+
+{/* <image
 href="https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Red_triangle_with_thick_white_border.svg/1200px-Red_triangle_with_thick_white_border.svg.png"
 x=${currentCirclePosition.x}
 y=${currentCirclePosition.y}
 width="100" // Set the width of the image
 height="100" // Set the height of the image
-/>
+/> */}
 
-</svg>
-  `;
+{/* <rect
+x="${currentCirclePosition.x}"
+y="${currentCirclePosition.y}"
+width="50"
+height="50"
+fill="black"
+transform="rotate(${currentCirclePosition.x} ${currentCirclePosition.y} 0)" /> */}
 
-  return <div dangerouslySetInnerHTML={{ __html: svgContent }} />;
-};
+// var rotationData = {"x": ${currentCirclePosition.x}, "y": ${currentCirclePosition.y}, "z": ${currentCirclePosition.z}, "w": ${currentCirclePosition.w}};
 
-export default DynamicSVGWithCircle;
-// <circle cx="${currentCirclePosition.x}" cy="${currentCirclePosition.y}" r="90" fill="red" />
-
-
-// <polygon
-// points="200,10 250,90 150,90"
-// fill="black"
-// transform={"translate(${currentCirclePosition.x},${currentCirclePosition.y}) rotate(${rotation})"}
-// />
+// // Convert quaternion to rotation angle and axis
+// const angle = 2 * Math.acos(rotationData.w) * (180 / Math.PI);
+// const axisX = rotationData.x / Math.sqrt(1 - rotationData.w * rotationData.w);
+// const axisY = rotationData.y / Math.sqrt(1 - rotationData.w * rotationData.w);
+// const axisZ = rotationData.z / Math.sqrt(1 - rotationData.w * rotationData.w);

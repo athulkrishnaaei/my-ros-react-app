@@ -6,7 +6,6 @@ import './App.css';
 
 
 function App() {
-  const MyContext = React.createContext();
   const [ros, setRos] = useState(null);
 
   const [topicName, setTopicName] = useState('/chatter');
@@ -19,8 +18,9 @@ function App() {
   const [chatterMessages, setChatterMessages] = useState([]);
   const [NavMessages, setNavMessages] = useState([]);
   const [rosoutMessages, setRosoutMessages] = useState([]);
+  
   const [connectionStatus, setConnectionStatus] = useState('Not Connected');
-  const [circlePosition, setCirclePosition] = useState({ x: 1500, y: 1000 });
+  const [circlePosition, setCirclePosition] = useState({ x: 1500, y: 1000 ,z: 0,w: 0});
 
   const sendCommand = (linear, angular, ros) => {
     if (ros) {
@@ -144,7 +144,13 @@ function App() {
 
     // Telop Keyboard
 
-    // Subscribing to /fake_pose_topic
+    // Subscribing to /
+    // const NavListener = new ROSLIB.Topic({
+    //   ros: ros,
+    //   name: '/tf',
+    //   messageType: 'tf2_msgs/msg/TFMessage',
+    // });
+
     const NavListener = new ROSLIB.Topic({
       ros: ros,
       name: '/odom',
@@ -160,8 +166,15 @@ function App() {
 
       // Update the circle position based on the received data
       setCirclePosition({
-        x: 1500 + message.pose.pose.position.x * 100,
-        y: 1000 + message.pose.pose.position.y * 100,
+        x: 1500+message.pose.pose.position.y*-100,
+        // .transforms[0].transform.translation.x*100,
+        y: 1000+message.pose.pose.position.x*-100,
+        // .transforms[0].transform.translation.y*100,
+        z: message.pose.pose.orientation.z,
+        // .transforms[0].transform.rotation.z*10,
+        w: message.pose.pose.orientation.w
+        // .transforms[0].transform.rotation.w*10
+        
       });
     });
         // Subscribing to /rosout
@@ -196,12 +209,12 @@ function App() {
       </header>
 
       <section className="content-section">
-        {/* <h2>Last 5 Received /fake_pose_topic Messages</h2>
+        <h2>Last 5 Received /fake_pose_topic Messages</h2>
         <ul>
           {NavMessages.map((message, index) => (
-            <li key={index}>{JSON.stringify(message.pose.pose.position.x)}</li>
+            <li key={index}>{JSON.stringify(message.pose.pose.orientation)}</li>
           ))}
-        </ul> */}
+        </ul>
 
         <h2>Last 5 Received /rosout Messages</h2>
         <div
@@ -302,17 +315,13 @@ function App() {
             border: '1px solid #ccc',
             padding: '10px',
           }}
-        >
-          <ul>
+        >rotate
             {chatterMessages.map((message, index) => (
               <li key={index}>{JSON.stringify(message)}</li>
             ))}
           </ul>
         </div> */}
 
-
-
-        
       
     </div>
     
