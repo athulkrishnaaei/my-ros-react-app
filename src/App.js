@@ -4,10 +4,9 @@ import ROSLIB from 'roslib';
 import DynamicSVGWithCircle from './components/DynamicSVGWithCircle';
 import './App.css';
 
-
 function App() {
   const [ros, setRos] = useState(null);
-
+  const [path, setPath] = useState([]);
   const [topicName, setTopicName] = useState('/chatter');
   const [messageType, setMessageType] = useState('std_msgs/msg/String');
   const [customTopic, setCustomTopic] = useState('');
@@ -41,25 +40,26 @@ function App() {
   
 
   const getMessageType = (messageType) => {
+    let textColor="green"
     switch (messageType) {
       case 10:
-        return 'DEBUG';
+        return ['DEBUG',textColor="red"];
       case 20:
-        return 'INFO';
+        return ['INFO',textColor="green"];
       case 30:
-        return 'WARN';
+        return ['WARN',textColor="red"];
       case 40:
-        return 'ERROR';
+        return ['ERROR',textColor="red"];
       case 50:
-        return 'FATAL';
+        return ['FATAL',textColor="red"];
       default:
-        return `Level ${messageType}`;
+        return [`Level ${messageType}`,,textColor="green"];
     }
   };
   
   const handleTopicChange = (e) => {
     // setChatterMessages([]);
-    
+  
     setTopicName(e.target.value);
     switch (e.target.value) {
       case '/chatter':
@@ -193,10 +193,27 @@ function App() {
           });
         });
 
+     
+        const pathTopic = new ROSLIB.Topic({
+          ros: ros,
+          name: '/plan',
+          messageType: 'nav_msgs/msg/Path', // Adjust messageType as per your setup
+        });
+    
+        pathTopic.subscribe((message) => {
+          // Assuming message is an array of poses in geometry_msgs/PoseStamped
+          // const newPath = message.pose((pose) => ({
+          //   x: pose.position.x,
+          //   y: pose.position.y,
+          // }));
+          setPath(message.header.pose.pose.position.x);
+        });
+
     // Clean up on component unmount
     return () => {
       NavListener.unsubscribe();
       rosoutListener.unsubscribe();
+      pathTopic.unsubscribe();
       ros.close();
     };
   }, []); // Empty dependency array to run the effect only once on mount
@@ -224,13 +241,15 @@ function App() {
             border: '1px solid #ccc',
             padding: '10px',
           }}
-        >
+        >   
           <ul>
             {rosoutMessages.map((message, index) => (
+           
+              <li style={{color: "black"}} key={index}> Level: {getMessageType(message.level)[0]}, Name: {message.name}, Message: {message.msg}</li>
               
-              <li key={index}> Level: {getMessageType(message.level)}, Name: {message.name}, Message: {message.msg}</li>
             ))}
           </ul>
+   
     
         </div>
         <div>
@@ -270,7 +289,7 @@ function App() {
       </section>
 
       <DynamicSVGWithCircle circlePosition={circlePosition} />
-
+      <h1>path : {path}</h1>
    <div class="teleop-keyboard">
     <h1>Teleop Keyboard</h1>
     <button 

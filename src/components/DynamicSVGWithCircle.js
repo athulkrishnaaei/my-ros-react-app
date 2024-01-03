@@ -1,8 +1,11 @@
 
 // src/components/DynamicSVGWithCircle.js
 import React, { useState, useEffect } from 'react';
-
+import car from './triangle.jpeg';
+import ROSLIB from 'roslib';
 const DynamicSVGWithCircle = ({circlePosition}) => {
+  const [paths, setPaths] = useState([]);
+  const imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNswP_4ALEgW1MB8iW1pPSTlTWV-8x4w5sRQ&usqp=CAU";
   const [currentCirclePosition, setCurrentCirclePosition] = useState({ x: 50, y: 50,z: 0,z: 0 });
   const [rotationAngles, setRotationAngles] = useState({ x: 0, y: 0, z: 0 });
   function coordinatesToAngle(x, y) {
@@ -48,6 +51,8 @@ const DynamicSVGWithCircle = ({circlePosition}) => {
 
   useEffect(() => {
     // Update the local state with the received prop
+   
+    // setPaths(path)
     setCurrentCirclePosition(circlePosition);
     let quaternion = { x: circlePosition.x, y: circlePosition.y, z: circlePosition.z, w: circlePosition.w };
     // Convert quaternion to Euler angles
@@ -74,38 +79,64 @@ const DynamicSVGWithCircle = ({circlePosition}) => {
 
 
 
-// <polygon id="myTriangle" points="80,30 150,50 100,150" fill="blue" />
-
 
   // Replace the rotation data with your provided values
  
 
+<g transform="translate(50, 50)">
 
-  <g transform="translate(50, 50)">
-  <image
-  href="https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Red_triangle_with_thick_white_border.svg/1200px-Red_triangle_with_thick_white_border.svg.png"
-  x=${(currentCirclePosition.x-50)}
-  y=${(currentCirclePosition.y-50)}
-  width="100" // Set the width of the image
-  height="100" // Set the height of the image
-  transform="rotate(${mapValueToAngle(currentCirclePosition.w)} ${(currentCirclePosition.x)} ${(currentCirclePosition.y)})"
-  transformOrigin= "center"
-  />
-  </g>
+<image
+background-color: transparent;
+href=${car}
+x=${(currentCirclePosition.x-50)}
+y=${(currentCirclePosition.y-50)}
+width="100" // Set the width of the image
+height="100" // Set the height of the image
+transform="rotate(${mapValueToAngle(currentCirclePosition.w)} ${(currentCirclePosition.x)} ${(currentCirclePosition.y)})"
+transformOrigin= "center"
+/>
+</g>
+
 </svg>
+
   `;
 
   return (
     <div>
      
   <div dangerouslySetInnerHTML={{ __html: svgContent }} />
-  <h1>{mapValueToAngle(currentCirclePosition.w)}</h1>
-  <h1>{coordinatesToAngle(currentCirclePosition.x,currentCirclePosition.y)}</h1>
+
+  {/* <h1>{mapValueToAngle(currentCirclePosition.w)}</h1>
+  <h1>{coordinatesToAngle(currentCirclePosition.x,currentCirclePosition.y)}</h1> */}
   </div>
   );
 };
 
 export default DynamicSVGWithCircle;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // <circle cx="${currentCirclePosition.x}" cy="${currentCirclePosition.y}" r="90" fill="red" />
 // transform={" rotate(${angle,axisX,axisY,axisZ})
 
@@ -139,3 +170,50 @@ transform="rotate(${currentCirclePosition.x} ${currentCirclePosition.y} 0)" /> *
 // const axisX = rotationData.x / Math.sqrt(1 - rotationData.w * rotationData.w);
 // const axisY = rotationData.y / Math.sqrt(1 - rotationData.w * rotationData.w);
 // const axisZ = rotationData.z / Math.sqrt(1 - rotationData.w * rotationData.w);
+
+
+
+
+
+  // <g transform="translate(50, 50)">
+  // // {robotPath.map((pose, index) => (
+  
+  // // ))}
+  // <image
+  // background-color: transparent;
+  // href=${car}
+  // x=${(currentCirclePosition.x-50)}
+  // y=${(currentCirclePosition.y-50)}
+  // width="100" // Set the width of the image
+  // height="100" // Set the height of the image
+  // transform="rotate(${mapValueToAngle(currentCirclePosition.w)} ${(currentCirclePosition.x)} ${(currentCirclePosition.y)})"
+  // transformOrigin= "center"
+  // />
+  // </g>
+
+  // <circle cx=${(currentCirclePosition.x-100)} cy=${(currentCirclePosition.y-100)} r="30" fill="green" />
+
+
+
+
+    // {${currentCirclePosition}.map((pose, index) => (
+  //   <circle
+  //     key={index}
+  //     cx=${(currentCirclePosition.x-100)}  // Adjust based on your robot pose data
+  //     cy=${(currentCirclePosition.y-100)}  // Adjust based on your robot pose data
+  //     r="30"  // Adjust the radius of the dots
+  //     fill="green"
+  //   />
+  // ))}
+
+
+
+  //   <path
+//   d={"M{paths.map((point) => "{point.x},{point.y}").join(' L')}"}
+//   fill="transparent"
+//   stroke="blue"
+//   strokeWidth="20"
+// />
+// {{paths}.map((point, index) => (
+//   <circle key={index} cx={point.x} cy={point.y} r="3" fill="red" />
+// ))}
